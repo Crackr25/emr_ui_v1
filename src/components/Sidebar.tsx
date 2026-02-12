@@ -8,9 +8,12 @@ import {
   LayoutDashboard, 
   Building2,
   User,
-  LogOut
+  LogOut,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 interface SidebarItemProps {
   icon: React.ReactNode;
@@ -20,17 +23,18 @@ interface SidebarItemProps {
 }
 
 const SidebarItem: React.FC<SidebarItemProps> = ({ icon, label, active, onClick }) => {
+  const { theme } = useTheme();
   return (
     <button
       onClick={onClick}
-      className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${
+      className={`w-full flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
         active
-          ? 'bg-slate-800 text-white'
-          : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+          ? theme === 'dark' ? 'bg-zinc-800 text-white' : 'bg-gray-100 text-gray-900'
+          : theme === 'dark' ? 'text-zinc-400 hover:text-white hover:bg-zinc-800/50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
       }`}
     >
-      <div className="w-5 h-5">{icon}</div>
-      <span className="text-sm font-medium">{label}</span>
+      <div className="w-4 h-4">{icon}</div>
+      <span className="text-xs font-medium">{label}</span>
     </button>
   );
 };
@@ -42,31 +46,32 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'Patients', onNavigate }) => {
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const menuItems = [
-    { icon: <CheckSquare className="w-5 h-5" />, label: 'Tasks' },
-    { icon: <Users className="w-5 h-5" />, label: 'Patients' },
-    { icon: <Calendar className="w-5 h-5" />, label: 'Schedule' },
-    { icon: <Sparkles className="w-5 h-5" />, label: 'AI Studio' },
-    { icon: <Shield className="w-5 h-5" />, label: 'Insurance' },
-    { icon: <LayoutDashboard className="w-5 h-5" />, label: 'Dashboard' },
-    { icon: <Building2 className="w-5 h-5" />, label: 'Organizations' },
+    { icon: <CheckSquare className="w-4 h-4" />, label: 'Tasks' },
+    { icon: <Users className="w-4 h-4" />, label: 'Patients' },
+    { icon: <Calendar className="w-4 h-4" />, label: 'Schedule' },
+    { icon: <Sparkles className="w-4 h-4" />, label: 'AI Studio' },
+    { icon: <Shield className="w-4 h-4" />, label: 'Insurance' },
+    { icon: <LayoutDashboard className="w-4 h-4" />, label: 'Dashboard' },
+    { icon: <Building2 className="w-4 h-4" />, label: 'Organizations' },
   ];
 
   return (
-    <aside className="w-64 h-screen bg-slate-900 border-r border-slate-800 flex flex-col">
+    <aside className={`w-56 h-screen flex flex-col ${theme === 'dark' ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-gray-200'} border-r`}>
       {/* Logo/Brand */}
-      <div className="px-6 py-5 border-b border-slate-800">
+      <div className={`px-4 py-3 border-b ${theme === 'dark' ? 'border-zinc-800' : 'border-gray-200'}`}>
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">H</span>
+          <div className={`w-7 h-7 rounded-md flex items-center justify-center ${theme === 'dark' ? 'bg-white' : 'bg-black'}`}>
+            <span className={`font-bold text-xs ${theme === 'dark' ? 'text-black' : 'text-white'}`}>O</span>
           </div>
-          <span className="text-white font-semibold text-lg">HealthCare</span>
+          <span className={`font-semibold text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>OneUp</span>
         </div>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 space-y-1">
+      <nav className="flex-1 px-2 py-3 space-y-0.5">
         {menuItems.map((item) => (
           <SidebarItem
             key={item.label}
@@ -79,21 +84,28 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'Patients', onNa
       </nav>
 
       {/* User Profile */}
-      <div className="px-4 py-4 border-t border-slate-800">
-        <div className="flex items-center gap-3 px-2 mb-3">
-          <div className="w-9 h-9 bg-slate-700 rounded-full flex items-center justify-center">
-            <User className="w-5 h-5 text-slate-300" />
+      <div className={`px-3 py-3 border-t ${theme === 'dark' ? 'border-zinc-800' : 'border-gray-200'}`}>
+        <div className="flex items-center gap-2 px-2 mb-2">
+          <div className={`w-7 h-7 rounded-full flex items-center justify-center ${theme === 'dark' ? 'bg-zinc-800' : 'bg-gray-200'}`}>
+            <User className={`w-4 h-4 ${theme === 'dark' ? 'text-zinc-400' : 'text-gray-600'}`} />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-white truncate">{user?.name || 'User'}</p>
-            <p className="text-xs text-slate-400 truncate">{user?.email}</p>
+            <p className={`text-xs font-medium truncate ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{user?.name || 'User'}</p>
+            <p className={`text-xs truncate ${theme === 'dark' ? 'text-zinc-500' : 'text-gray-500'}`}>{user?.email}</p>
           </div>
         </div>
         <button
-          onClick={logout}
-          className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+          onClick={toggleTheme}
+          className={`w-full flex items-center gap-2 px-2 py-1.5 mb-2 text-xs rounded-md transition-colors ${theme === 'dark' ? 'text-zinc-400 hover:text-white hover:bg-zinc-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'}`}
         >
-          <LogOut className="w-4 h-4" />
+          {theme === 'dark' ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+          <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+        </button>
+        <button
+          onClick={logout}
+          className={`w-full flex items-center gap-2 px-2 py-1.5 text-xs rounded-md transition-colors ${theme === 'dark' ? 'text-zinc-400 hover:text-white hover:bg-zinc-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'}`}
+        >
+          <LogOut className="w-3.5 h-3.5" />
           <span>Logout</span>
         </button>
       </div>

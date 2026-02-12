@@ -2,9 +2,20 @@ import React, { useState } from 'react';
 import { Search, Plus, MoreHorizontal } from 'lucide-react';
 import { Sidebar } from '../components/Sidebar';
 import { AddIntakeFieldModal, IntakeFieldFormData } from '../components/AddIntakeFieldModal';
+import { useTheme } from '../context/ThemeContext';
 import { IntakePreset } from '../types/aiStudio.types';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
-// Mock Data - Matching the image (will be updated dynamically)
+// Mock Data
 const INITIAL_MOCK_PRESETS: IntakePreset[] = [
   {
     id: '1',
@@ -67,6 +78,7 @@ interface AIStudioPageProps {
 }
 
 export const AIStudioPage: React.FC<AIStudioPageProps> = ({ onNavigate }) => {
+  const { theme } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [intakePresets, setIntakePresets] = useState<IntakePreset[]>(INITIAL_MOCK_PRESETS);
@@ -96,170 +108,121 @@ export const AIStudioPage: React.FC<AIStudioPageProps> = ({ onNavigate }) => {
   );
 
   return (
-    <div className="flex h-screen bg-slate-950">
+    <div className={`flex h-screen ${theme === 'dark' ? 'bg-zinc-950' : 'bg-gray-50'}`}>
       {/* Sidebar */}
       <Sidebar currentPage="AI Studio" onNavigate={onNavigate} />
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="bg-slate-900 border-b border-slate-800 px-8 py-4">
+        <header className={`${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-200'} border-b px-8 py-3`}>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-semibold text-white">Platform</h1>
-              <p className="text-sm text-slate-400 mt-1">
+              <h1 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Platform</h1>
+              <p className={`text-xs mt-0.5 ${theme === 'dark' ? 'text-zinc-400' : 'text-gray-600'}`}>
                 AI Studio - Intake Presets
               </p>
             </div>
-            <div className="flex items-center gap-3">
-              <button 
+            <div className="flex items-center gap-2">
+              <Button 
                 onClick={() => setIsModalOpen(true)}
-                className="px-4 py-2 text-sm font-medium bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors flex items-center gap-2"
+                className={`text-xs ${theme === 'dark' ? 'bg-black hover:bg-zinc-800 text-white' : 'bg-black hover:bg-gray-800 text-white'}`}
+                size="sm"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-3.5 h-3.5 mr-1.5" />
                 Add Intake Field
-              </button>
+              </Button>
             </div>
           </div>
         </header>
 
         {/* Toolbar */}
-        <div className="bg-slate-900 border-b border-slate-800 px-8 py-4">
-          <div className="flex items-center gap-3">
+        <div className={`${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-200'} border-b px-8 py-3`}>
+          <div className="flex items-center gap-2">
             {/* Search Bar */}
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
-              <input
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+              <Input
                 type="text"
                 placeholder="Filter intake fields..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                className={`pl-9 h-9 text-sm ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500 focus-visible:ring-zinc-600' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus-visible:ring-blue-500'}`}
               />
             </div>
 
             {/* Intake Presets Button */}
-            <button className="px-4 py-2.5 bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg transition-colors flex items-center gap-2">
-              <span className="text-sm font-medium">Intake Presets</span>
-            </button>
+            <Button 
+              variant="outline"
+              size="sm"
+              className={`text-xs ${theme === 'dark' ? 'border-zinc-700 text-zinc-300 hover:bg-zinc-800' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}`}
+            >
+              Intake Presets
+            </Button>
           </div>
         </div>
 
         {/* Table Container */}
-        <div className="flex-1 overflow-auto px-8 py-6">
-          <div className="bg-slate-900 border border-slate-800 rounded-lg overflow-hidden">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-slate-800 bg-slate-900/50">
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                    Name
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                    Set
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                    System Prompt
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                    Example 1
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                    Example 2
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                    Created At
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800">
+        <div className="flex-1 overflow-auto px-8 py-4">
+          <div className={`${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-200'} border rounded-lg overflow-hidden`}>
+            <Table>
+              <TableHeader>
+                <TableRow className={`border-b ${theme === 'dark' ? 'border-zinc-800 hover:bg-zinc-900' : 'border-gray-200 hover:bg-gray-50'}`}>
+                  <TableHead className={`text-xs font-medium py-2 ${theme === 'dark' ? 'text-zinc-400' : 'text-gray-600'}`}>Name</TableHead>
+                  <TableHead className={`text-xs font-medium py-2 ${theme === 'dark' ? 'text-zinc-400' : 'text-gray-600'}`}>Set</TableHead>
+                  <TableHead className={`text-xs font-medium py-2 ${theme === 'dark' ? 'text-zinc-400' : 'text-gray-600'}`}>System Prompt</TableHead>
+                  <TableHead className={`text-xs font-medium py-2 ${theme === 'dark' ? 'text-zinc-400' : 'text-gray-600'}`}>Example 1</TableHead>
+                  <TableHead className={`text-xs font-medium py-2 ${theme === 'dark' ? 'text-zinc-400' : 'text-gray-600'}`}>Example 2</TableHead>
+                  <TableHead className={`text-xs font-medium py-2 ${theme === 'dark' ? 'text-zinc-400' : 'text-gray-600'}`}>Created At</TableHead>
+                  <TableHead className={`text-xs font-medium py-2 ${theme === 'dark' ? 'text-zinc-400' : 'text-gray-600'}`}>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {filteredPresets.map((preset) => (
-                  <tr
+                  <TableRow
                     key={preset.id}
-                    className="hover:bg-slate-800/50 transition-colors"
+                    className={`border-b ${theme === 'dark' ? 'border-zinc-800 hover:bg-zinc-800/50' : 'border-gray-200 hover:bg-gray-50'}`}
                   >
-                    {/* Name */}
-                    <td className="px-6 py-4">
-                      <span className="text-sm font-medium text-white">
-                        {preset.name}
-                      </span>
-                    </td>
-
-                    {/* Set */}
-                    <td className="px-6 py-4">
-                      <span className="text-sm text-slate-400">{preset.set}</span>
-                    </td>
-
-                    {/* System Prompt */}
-                    <td className="px-6 py-4 max-w-md">
-                      <p className="text-sm text-slate-300 line-clamp-2">
-                        {preset.systemPrompt}
-                      </p>
-                    </td>
-
-                    {/* Example 1 */}
-                    <td className="px-6 py-4">
-                      <span className="text-sm text-slate-400">
-                        {preset.example1 || '-'}
-                      </span>
-                    </td>
-
-                    {/* Example 2 */}
-                    <td className="px-6 py-4">
-                      <span className="text-sm text-slate-400">
-                        {preset.example2 || '-'}
-                      </span>
-                    </td>
-
-                    {/* Created At */}
-                    <td className="px-6 py-4">
-                      <span className="text-sm text-slate-400">
-                        {preset.createdAt}
-                      </span>
-                    </td>
-
-                    {/* Actions */}
-                    <td className="px-6 py-4">
-                      <button 
-                        className="p-1 hover:bg-slate-700 rounded transition-colors"
+                    <TableCell className={`font-medium text-sm py-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                      {preset.name}
+                    </TableCell>
+                    <TableCell className={`text-xs py-2 ${theme === 'dark' ? 'text-zinc-400' : 'text-gray-600'}`}>
+                      {preset.set}
+                    </TableCell>
+                    <TableCell className={`text-xs max-w-md truncate py-2 ${theme === 'dark' ? 'text-zinc-300' : 'text-gray-700'}`}>
+                      {preset.systemPrompt}
+                    </TableCell>
+                    <TableCell className={`text-xs py-2 ${theme === 'dark' ? 'text-zinc-500' : 'text-gray-600'}`}>
+                      {preset.example1 || '-'}
+                    </TableCell>
+                    <TableCell className={`text-xs py-2 ${theme === 'dark' ? 'text-zinc-500' : 'text-gray-600'}`}>
+                      {preset.example2 || '-'}
+                    </TableCell>
+                    <TableCell className={`text-xs py-2 ${theme === 'dark' ? 'text-zinc-500' : 'text-gray-600'}`}>
+                      {preset.createdAt}
+                    </TableCell>
+                    <TableCell className="py-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className={`h-7 w-7 ${theme === 'dark' ? 'text-zinc-400 hover:text-white hover:bg-zinc-800' : 'text-gray-400 hover:text-gray-900 hover:bg-gray-100'}`}
                         aria-label={`Actions for ${preset.name}`}
                       >
-                        <MoreHorizontal className="w-5 h-5 text-slate-400" />
-                      </button>
-                    </td>
-                  </tr>
+                        <MoreHorizontal className="w-4 h-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
-
-            {/* Empty State */}
-            {filteredPresets.length === 0 && (
-              <div className="py-16 text-center">
-                <p className="text-slate-400">No intake presets found matching your search.</p>
-              </div>
-            )}
+              </TableBody>
+            </Table>
           </div>
 
           {/* Footer Info */}
-          <div className="mt-4 flex items-center justify-between text-sm text-slate-400">
+          <div className={`mt-3 flex items-center justify-between text-xs ${theme === 'dark' ? 'text-zinc-500' : 'text-gray-600'}`}>
             <p>
-              Showing <span className="text-white font-medium">{filteredPresets.length}</span> of{' '}
-              <span className="text-white font-medium">{intakePresets.length}</span> intake presets
+              Showing <span className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{filteredPresets.length}</span> of{' '}
+              <span className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{intakePresets.length}</span> intake presets
             </p>
-            <div className="flex items-center gap-2">
-              <span>Rows per page:</span>
-              <select 
-                className="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-white text-sm"
-                aria-label="Rows per page"
-              >
-                <option>10</option>
-                <option>25</option>
-                <option>50</option>
-              </select>
-              <span className="ml-4">Page 1 of 1</span>
-            </div>
           </div>
         </div>
       </main>
