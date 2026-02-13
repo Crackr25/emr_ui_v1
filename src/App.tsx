@@ -6,6 +6,7 @@ import { PatientDetailPage } from './pages/PatientDetailPage';
 import { LoginPage } from './pages/LoginPage';
 import { AdminInvitePage } from './pages/AdminInvitePage';
 import { RegisterPage } from './pages/RegisterPage';
+import { OnboardingPage } from './pages/OnboardingPage';
 
 function AppContent() {
   const { isAuthenticated, user } = useAuth();
@@ -13,7 +14,7 @@ function AppContent() {
   const [selectedPatient, setSelectedPatient] = useState<{ name: string; mrn: string } | null>(null);
   const [inviteData, setInviteData] = useState<{ email: string; role: 'doctor' | 'nurse' | 'admin' } | null>(null);
 
-  // Check for invite link on mount
+  // Check for invite link or onboarding on mount
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const email = urlParams.get('email');
@@ -24,6 +25,10 @@ function AppContent() {
     }
   }, []);
 
+  // Check if onboarding page is requested
+  const urlParams = new URLSearchParams(window.location.search);
+  const showOnboarding = urlParams.get('onboarding') === 'true';
+
   // Handle navigation between pages
   const handleNavigate = (page: string) => {
     setCurrentPage(page);
@@ -32,6 +37,17 @@ function AppContent() {
       setSelectedPatient(null);
     }
   };
+
+  // Show OnboardingPage if requested via query parameter
+  if (showOnboarding && !isAuthenticated) {
+    return (
+      <OnboardingPage 
+        email="test@example.com"
+        role="doctor"
+        onComplete={() => window.location.href = '/'}
+      />
+    );
+  }
 
   // Show RegisterPage if user clicked invite link
   if (inviteData && !isAuthenticated) {
