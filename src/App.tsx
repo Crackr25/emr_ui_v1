@@ -1,19 +1,28 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { PatientsPage } from './pages/PatientsPage';
 import { AIStudioPage } from './pages/AIStudioPage';
 import { PatientDetailPage } from './pages/PatientDetailPage';
 import { LoginPage } from './pages/LoginPage';
+import { AdminInvitePage } from './pages/AdminInvitePage';
+import { RegisterPage } from './pages/RegisterPage';
 
 function AppContent() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [currentPage, setCurrentPage] = useState('Patients');
   const [selectedPatient, setSelectedPatient] = useState<{ name: string; mrn: string } | null>(null);
+  const [inviteData, setInviteData] = useState<{ email: string; role: 'doctor' | 'nurse' | 'admin' } | null>(null);
 
-  // Show LoginPage if not authenticated
-  if (!isAuthenticated) {
-    return <LoginPage />;
-  }
+  // Check for invite link on mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const email = urlParams.get('email');
+    const role = urlParams.get('role') as 'doctor' | 'nurse' | 'admin' | null;
+
+    if (email && role) {
+      setInviteData({ email, role });
+    }
+  }, []);
 
   // Handle navigation between pages
   const handleNavigate = (page: string) => {
@@ -23,6 +32,27 @@ function AppContent() {
       setSelectedPatient(null);
     }
   };
+
+  // Show RegisterPage if user clicked invite link
+  if (inviteData && !isAuthenticated) {
+    return (
+      <RegisterPage 
+        inviteEmail={inviteData.email}
+        inviteRole={inviteData.role}
+        onComplete={() => setInviteData(null)}
+      />
+    );
+  }
+
+  // Show LoginPage if not authenticated
+  if (!isAuthenticated) {
+    return <LoginPage />;
+  }
+
+  // Show Admin Portal for admin users
+  if (user?.role === 'admin') {
+    return <AdminInvitePage onNavigate={handleNavigate} />;
+  }
 
   // Handle patient selection
   const handlePatientSelect = (patientName: string, patientMRN: string) => {
