@@ -38,12 +38,12 @@ interface AdminSidebarProps {
   onNavigate?: (page: string) => void;
 }
 
-export const AdminSidebar: React.FC<AdminSidebarProps> = ({ currentPage = 'Invite', onNavigate }) => {
+export const AdminSidebar: React.FC<AdminSidebarProps> = ({ currentPage = 'Users', onNavigate }) => {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
   const menuItems = [
-    { icon: <UserPlus className="w-4 h-4" />, label: 'Invite' },
+    { icon: <UserPlus className="w-4 h-4" />, label: 'Users' },
   ];
 
   return (

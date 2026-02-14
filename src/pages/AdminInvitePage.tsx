@@ -1,34 +1,13 @@
-import React, { useState } from 'react';
-import { UserPlus, Mail, Send } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { UserPlus, CheckCircle2 } from 'lucide-react';
 import { AdminSidebar } from '../components/AdminSidebar';
 import { InviteLinkModal } from '../components/InviteLinkModal';
+import { InviteUserModal } from '../components/InviteUserModal';
 import { useTheme } from '../context/ThemeContext';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-
-interface InvitedUser {
-  id: string;
-  email: string;
-  role: 'doctor' | 'nurse' | 'admin';
-  status: 'pending' | 'accepted' | 'expired';
-  invitedAt: string;
-}
+import { DataTable } from '@/components/ui/data-table';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { InvitedUser, createInvitedUsersColumns } from '../components/InvitedUsersColumns';
 
 interface AdminInvitePageProps {
   onNavigate?: (page: string) => void;
@@ -36,10 +15,11 @@ interface AdminInvitePageProps {
 
 export const AdminInvitePage: React.FC<AdminInvitePageProps> = ({ onNavigate }) => {
   const { theme } = useTheme();
-  const [email, setEmail] = useState('');
-  const [role, setRole] = useState<'doctor' | 'nurse' | 'admin'>('doctor');
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
   const [currentInvite, setCurrentInvite] = useState<{ email: string; role: string; link: string } | null>(null);
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const [lastInvitedEmail, setLastInvitedEmail] = useState('');
   const [invitedUsers, setInvitedUsers] = useState<InvitedUser[]>([
     {
       id: '1',
@@ -57,9 +37,7 @@ export const AdminInvitePage: React.FC<AdminInvitePageProps> = ({ onNavigate }) 
     },
   ]);
 
-  const handleSendInvite = () => {
-    if (!email) return;
-
+  const handleSendInvite = (email: string, role: 'doctor' | 'nurse' | 'admin') => {
     const newInvite: InvitedUser = {
       id: String(invitedUsers.length + 1),
       email,
@@ -75,13 +53,18 @@ export const AdminInvitePage: React.FC<AdminInvitePageProps> = ({ onNavigate }) 
     console.log('✉️ Invite sent:', newInvite);
     console.log('🔗 Invite link:', inviteLink);
     
+    // Show success alert
+    setLastInvitedEmail(email);
+    setShowSuccessAlert(true);
+    
     // Show modal with invite link
     setCurrentInvite({ email, role, link: inviteLink });
-    setIsModalOpen(true);
+    setIsLinkModalOpen(true);
     
-    // Reset form
-    setEmail('');
-    setRole('doctor');
+    // Hide alert after 5 seconds
+    setTimeout(() => {
+      setShowSuccessAlert(false);
+    }, 5000);
   };
 
   const getStatusColor = (status: string) => {
@@ -97,10 +80,15 @@ export const AdminInvitePage: React.FC<AdminInvitePageProps> = ({ onNavigate }) 
     }
   };
 
+  const columns = useMemo(
+    () => createInvitedUsersColumns({ theme, getStatusColor }),
+    [theme]
+  );
+
   return (
     <div className={`flex h-screen ${theme === 'dark' ? 'bg-zinc-950' : 'bg-gray-50'}`}>
       {/* Admin Sidebar */}
-      <AdminSidebar currentPage="Invite" onNavigate={onNavigate} />
+      <AdminSidebar currentPage="Users" onNavigate={onNavigate} />
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
@@ -118,127 +106,62 @@ export const AdminInvitePage: React.FC<AdminInvitePageProps> = ({ onNavigate }) 
 
         {/* Content */}
         <div className="flex-1 overflow-auto px-8 py-6">
-          {/* Invite Form Card */}
-          <div className={`${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-200'} border rounded-lg p-6 mb-6`}>
-            <div className="flex items-center gap-2 mb-4">
-              <UserPlus className={`w-5 h-5 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`} />
-              <h2 className={`text-base font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Send Invitation
-              </h2>
-            </div>
+          {/* Success Alert */}
+          {showSuccessAlert && (
+            <Alert variant="success" className={`mb-6 ${theme === 'dark' ? 'bg-green-950/30 border-green-800' : 'bg-green-50 border-green-200'}`}>
+              <CheckCircle2 className="h-4 w-4" />
+              <AlertTitle className={theme === 'dark' ? 'text-green-400' : 'text-green-700'}>Invitation Sent!</AlertTitle>
+              <AlertDescription className={theme === 'dark' ? 'text-green-400/80' : 'text-green-600'}>
+                An invitation has been successfully sent to <strong>{lastInvitedEmail}</strong>
+              </AlertDescription>
+            </Alert>
+          )}
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Email Input */}
-              <div className="md:col-span-2">
-                <Label htmlFor="email" className={`text-xs ${theme === 'dark' ? 'text-zinc-400' : 'text-gray-600'}`}>
-                  Email Address
-                </Label>
-                <div className="relative mt-1">
-                  <Mail className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${theme === 'dark' ? 'text-zinc-500' : 'text-gray-400'}`} />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="user@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className={`pl-9 h-9 text-sm ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500 focus-visible:ring-zinc-600' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus-visible:ring-blue-500'}`}
-                  />
-                </div>
-              </div>
-
-              {/* Role Select */}
-              <div>
-                <Label htmlFor="role" className={`text-xs ${theme === 'dark' ? 'text-zinc-400' : 'text-gray-600'}`}>
-                  Role
-                </Label>
-                <Select value={role} onValueChange={(value: 'doctor' | 'nurse' | 'admin') => setRole(value)}>
-                  <SelectTrigger 
-                    className={`mt-1 h-9 text-sm ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
-                  >
-                    <SelectValue placeholder="Select role" />
-                  </SelectTrigger>
-                  <SelectContent className={theme === 'dark' ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-gray-300'}>
-                    <SelectItem value="doctor" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>Doctor</SelectItem>
-                    <SelectItem value="nurse" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>Nurse</SelectItem>
-                    <SelectItem value="admin" className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>Admin</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+          {/* Toolbar - Search and Actions */}
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 flex-1">
+              {/* Search and Filter will be inside the DataTable */}
             </div>
-
-            {/* Send Button */}
-            <div className="mt-4">
-              <Button
-                onClick={handleSendInvite}
-                disabled={!email}
-                className={`text-xs ${theme === 'dark' ? 'bg-white hover:bg-zinc-200 text-black' : 'bg-black hover:bg-gray-800 text-white'}`}
-                size="sm"
-              >
-                <Send className="w-3.5 h-3.5 mr-1.5" />
-                Send Invitation
-              </Button>
-            </div>
+            <Button
+              onClick={() => setIsInviteModalOpen(true)}
+              className={`${theme === 'dark' ? 'bg-white hover:bg-zinc-200 text-black' : 'bg-black hover:bg-gray-800 text-white'}`}
+            >
+              <UserPlus className="w-4 h-4 mr-2" />
+              Invite User
+            </Button>
           </div>
 
           {/* Invited Users Table */}
-          <div className={`${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-200'} border rounded-lg overflow-hidden`}>
-            <div className="px-6 py-4 border-b border-zinc-800">
+          <div className={`${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-200'} border rounded-lg p-6`}>
+            <div className="mb-4">
               <h3 className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 Recent Invitations
               </h3>
             </div>
             
-            <Table>
-              <TableHeader>
-                <TableRow className={`border-b ${theme === 'dark' ? 'border-zinc-800 hover:bg-zinc-900' : 'border-gray-200 hover:bg-gray-50'}`}>
-                  <TableHead className={`text-xs font-medium py-2 ${theme === 'dark' ? 'text-zinc-400' : 'text-gray-600'}`}>Email</TableHead>
-                  <TableHead className={`text-xs font-medium py-2 ${theme === 'dark' ? 'text-zinc-400' : 'text-gray-600'}`}>Role</TableHead>
-                  <TableHead className={`text-xs font-medium py-2 ${theme === 'dark' ? 'text-zinc-400' : 'text-gray-600'}`}>Status</TableHead>
-                  <TableHead className={`text-xs font-medium py-2 ${theme === 'dark' ? 'text-zinc-400' : 'text-gray-600'}`}>Invited At</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {invitedUsers.map((user) => (
-                  <TableRow
-                    key={user.id}
-                    className={`border-b ${theme === 'dark' ? 'border-zinc-800 hover:bg-zinc-800/50' : 'border-gray-200 hover:bg-gray-50'}`}
-                  >
-                    <TableCell className={`font-medium text-sm py-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      {user.email}
-                    </TableCell>
-                    <TableCell className={`text-xs py-2 ${theme === 'dark' ? 'text-zinc-300' : 'text-gray-700'}`}>
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                        theme === 'dark' ? 'bg-zinc-800 text-zinc-300' : 'bg-gray-100 text-gray-700'
-                      }`}>
-                        {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
-                      </span>
-                    </TableCell>
-                    <TableCell className={`text-xs py-2 font-medium ${getStatusColor(user.status)}`}>
-                      {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
-                    </TableCell>
-                    <TableCell className={`text-xs py-2 ${theme === 'dark' ? 'text-zinc-500' : 'text-gray-600'}`}>
-                      {user.invitedAt}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-
-          {/* Footer Info */}
-          <div className={`mt-3 flex items-center justify-between text-xs ${theme === 'dark' ? 'text-zinc-500' : 'text-gray-600'}`}>
-            <p>
-              Showing <span className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{invitedUsers.length}</span> invitation(s)
-            </p>
+            <DataTable 
+              columns={columns} 
+              data={invitedUsers} 
+              theme={theme}
+              searchKey="email"
+              searchPlaceholder="Search by email..."
+            />
           </div>
         </div>
       </main>
 
+      {/* Invite User Modal */}
+      <InviteUserModal
+        isOpen={isInviteModalOpen}
+        onClose={() => setIsInviteModalOpen(false)}
+        onInvite={handleSendInvite}
+      />
+
       {/* Invite Link Modal */}
       {currentInvite && (
         <InviteLinkModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          isOpen={isLinkModalOpen}
+          onClose={() => setIsLinkModalOpen(false)}
           email={currentInvite.email}
           role={currentInvite.role}
           inviteLink={currentInvite.link}
