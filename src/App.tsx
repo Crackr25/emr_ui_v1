@@ -6,7 +6,7 @@ import { PatientDetailPage } from './pages/PatientDetailPage';
 import { LoginPage } from './pages/LoginPage';
 import { AdminInvitePage } from './pages/AdminInvitePage';
 import { RegisterPage } from './pages/RegisterPage';
-import { OnboardingPage } from './pages/OnboardingPage';
+import { OnboardingPage } from './pages/OnboardingPageRefactored';
 
 function AppContent() {
   const { isAuthenticated, user } = useAuth();

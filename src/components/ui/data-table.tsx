@@ -30,6 +30,7 @@ interface DataTableProps<TData, TValue> {
   theme?: 'light' | 'dark';
   searchKey?: string;
   searchPlaceholder?: string;
+  entityLabel?: string;
 }
 
 export function DataTable<TData, TValue>({
@@ -38,6 +39,7 @@ export function DataTable<TData, TValue>({
   theme = 'light',
   searchKey = 'email',
   searchPlaceholder = 'Search...',
+  entityLabel = 'item(s)',
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -166,7 +168,7 @@ export function DataTable<TData, TValue>({
           <span className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
             {table.getFilteredRowModel().rows.length}
           </span>{" "}
-          invitation(s)
+          {entityLabel}
         </div>
         <div className="flex items-center space-x-2">
           <Button

@@ -145,6 +145,7 @@ export const AdminInvitePage: React.FC<AdminInvitePageProps> = ({ onNavigate }) 
               theme={theme}
               searchKey="email"
               searchPlaceholder="Search by email..."
+              entityLabel="invitation(s)"
             />
           </div>
         </div>
