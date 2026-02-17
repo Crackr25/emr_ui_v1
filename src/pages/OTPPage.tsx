@@ -76,7 +76,10 @@ export const OTPPage: React.FC<OTPPageProps> = ({ email, onBack }) => {
       // In production, verify OTP with backend
       // For demo, accept any 6-digit code
       console.log('✅ OTP verified:', otpCode);
-      login(email, 'doctor'); // Login after successful OTP verification
+      
+      // Determine role based on email
+      const role = email === 'admin@example.com' ? 'admin' : 'doctor';
+      login(email, role); // Login after successful OTP verification
     }, 1500);
   };
 

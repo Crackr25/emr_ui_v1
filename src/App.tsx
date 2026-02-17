@@ -5,12 +5,17 @@ import { AIStudioPage } from './pages/AIStudioPage';
 import { PatientDetailPage } from './pages/PatientDetailPage';
 import { LoginPage } from './pages/LoginPage';
 import { AdminInvitePage } from './pages/AdminInvitePage';
+import { AdminRolesPage } from './pages/AdminRolesPage';
+import { AdminPolicyGroupsPage } from './pages/AdminPolicyGroupsPage';
+import { AdminPermissionsPage } from './pages/AdminPermissionsPage';
+import { AdminRolePoliciesPage } from './pages/AdminRolePoliciesPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { OnboardingPage } from './pages/OnboardingPageRefactored';
 
 function AppContent() {
   const { isAuthenticated, user } = useAuth();
   const [currentPage, setCurrentPage] = useState('Patients');
+  const [adminPage, setAdminPage] = useState('Users');
   const [selectedPatient, setSelectedPatient] = useState<{ name: string; mrn: string } | null>(null);
   const [inviteData, setInviteData] = useState<{ email: string; role: 'doctor' | 'nurse' | 'admin' } | null>(null);
 
@@ -36,6 +41,11 @@ function AppContent() {
     if (page !== 'PatientDetail') {
       setSelectedPatient(null);
     }
+  };
+
+  // Handle admin navigation
+  const handleAdminNavigate = (page: string) => {
+    setAdminPage(page);
   };
 
   // Show OnboardingPage if requested via query parameter
@@ -67,7 +77,19 @@ function AppContent() {
 
   // Show Admin Portal for admin users
   if (user?.role === 'admin') {
-    return <AdminInvitePage onNavigate={handleNavigate} />;
+    switch (adminPage) {
+      case 'Roles':
+        return <AdminRolesPage onNavigate={handleAdminNavigate} />;
+      case 'Policy Groups':
+        return <AdminPolicyGroupsPage onNavigate={handleAdminNavigate} />;
+      case 'Permissions':
+        return <AdminPermissionsPage onNavigate={handleAdminNavigate} />;
+      case 'Role Policies':
+        return <AdminRolePoliciesPage onNavigate={handleAdminNavigate} />;
+      case 'Users':
+      default:
+        return <AdminInvitePage onNavigate={handleAdminNavigate} />;
+    }
   }
 
   // Handle patient selection

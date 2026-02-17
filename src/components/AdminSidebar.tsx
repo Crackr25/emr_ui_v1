@@ -1,6 +1,10 @@
 import React from 'react';
 import { 
   UserPlus,
+  Shield,
+  Lock,
+  FileText,
+  Link2,
   User,
   LogOut,
   Sun,
@@ -44,6 +48,10 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ currentPage = 'Users
 
   const menuItems = [
     { icon: <UserPlus className="w-4 h-4" />, label: 'Users' },
+    { icon: <Shield className="w-4 h-4" />, label: 'Roles' },
+    { icon: <FileText className="w-4 h-4" />, label: 'Policy Groups' },
+    { icon: <Lock className="w-4 h-4" />, label: 'Permissions' },
+    { icon: <Link2 className="w-4 h-4" />, label: 'Role Policies' },
   ];
 
   return (

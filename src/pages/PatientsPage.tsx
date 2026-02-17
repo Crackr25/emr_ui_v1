@@ -147,11 +147,6 @@ export const PatientsPage: React.FC<PatientsPageProps> = ({ onNavigate, onPatien
         <div className="flex-1 overflow-auto px-8 py-6">
           {/* Patients Table */}
           <div className={`${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-200'} border rounded-lg p-6`}>
-            <div className="mb-4">
-              <h3 className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Patient Records
-              </h3>
-            </div>
             
             <DataTable 
               columns={columns} 
