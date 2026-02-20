@@ -5,6 +5,7 @@ import { AIStudioPage } from './pages/AIStudioPage';
 import { PatientDetailPage } from './pages/PatientDetailPage';
 import { LoginPage } from './pages/LoginPage';
 import { AdminInvitePage } from './pages/AdminInvitePage';
+import { AdminOrganizationsPage } from './pages/AdminOrganizationsPage';
 import { AdminRolesPage } from './pages/AdminRolesPage';
 import { AdminPolicyGroupsPage } from './pages/AdminPolicyGroupsPage';
 import { AdminPermissionsPage } from './pages/AdminPermissionsPage';
@@ -78,6 +79,8 @@ function AppContent() {
   // Show Admin Portal for admin users
   if (user?.role === 'admin') {
     switch (adminPage) {
+      case 'Organizations':
+        return <AdminOrganizationsPage onNavigate={handleAdminNavigate} />;
       case 'Roles':
         return <AdminRolesPage onNavigate={handleAdminNavigate} />;
       case 'Policy Groups':

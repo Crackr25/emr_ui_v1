@@ -8,7 +8,8 @@ import {
   User,
   LogOut,
   Sun,
-  Moon
+  Moon,
+  Building2
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -48,6 +49,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ currentPage = 'Users
 
   const menuItems = [
     { icon: <UserPlus className="w-4 h-4" />, label: 'Users' },
+    { icon: <Building2 className="w-4 h-4" />, label: 'Organizations' },
     { icon: <Shield className="w-4 h-4" />, label: 'Roles' },
     { icon: <FileText className="w-4 h-4" />, label: 'Policy Groups' },
     { icon: <Lock className="w-4 h-4" />, label: 'Permissions' },

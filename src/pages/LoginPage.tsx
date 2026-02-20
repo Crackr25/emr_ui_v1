@@ -32,12 +32,12 @@ export const LoginPage: React.FC = () => {
   return (
     <div className="min-h-screen flex">
       {/* Left Side - Hero Section */}
-      <div className="hidden lg:flex lg:w-1/2 bg-black relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 wavy-gradient-bg relative overflow-hidden">
         {/* Content */}
-        <div className="relative z-10 flex flex-col justify-center items-center w-full px-12 text-white">
-          {/* Logo/Brand */}
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-4">
+        <div className="wavy-gradient-content flex flex-col justify-center items-center w-full px-12 text-white min-h-screen">
+          {/* Logo/Brand - Centered at top */}
+          <div className="absolute top-12 left-1/2 -translate-x-1/2">
+            <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center">
                 <Activity className="w-7 h-7 text-black" strokeWidth={2.5} />
               </div>
@@ -45,7 +45,7 @@ export const LoginPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Hero Image Placeholder */}
+          {/* Hero Image Placeholder - Centered */}
           <div className="w-full max-w-md aspect-square bg-zinc-900 rounded-2xl shadow-2xl p-4">
             <div className="w-full h-full bg-zinc-800 rounded-xl flex items-center justify-center">
               <div className="text-center">
@@ -56,8 +56,8 @@ export const LoginPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Feature Text */}
-          <p className="mt-8 text-center text-zinc-400 max-w-md">
+          {/* Feature Text - Below card */}
+          <p className="mt-8 text-center text-zinc-300 max-w-md">
             Streamline patient care with our comprehensive Electronic Medical Records system
           </p>
         </div>
