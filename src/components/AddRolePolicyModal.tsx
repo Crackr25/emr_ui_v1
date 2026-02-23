@@ -12,6 +12,7 @@ interface AddRolePolicyModalProps {
   onSubmit: (data: RolePolicyFormData) => void;
   roles: Array<{ role_id: string; role_name: string }>;
   policyGroups: Array<{ policy_id: string; policy_name: string }>;
+  preselectedRoleId?: string;
 }
 
 export const AddRolePolicyModal: React.FC<AddRolePolicyModalProps> = ({ 
@@ -19,12 +20,13 @@ export const AddRolePolicyModal: React.FC<AddRolePolicyModalProps> = ({
   onClose, 
   onSubmit,
   roles,
-  policyGroups 
+  policyGroups,
+  preselectedRoleId
 }) => {
   const { theme } = useTheme();
   const { register, handleSubmit, reset, formState: { errors } } = useForm<RolePolicyFormData>({
     defaultValues: {
-      role_id: '',
+      role_id: preselectedRoleId || '',
       policy_id: '',
       status: 'active',
     },
@@ -56,15 +58,15 @@ export const AddRolePolicyModal: React.FC<AddRolePolicyModalProps> = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit(handleFormSubmit)} className="px-6 py-4 space-y-4">
-          <div>
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="px-6 py-4 space-y-4">          <div>
             <Label htmlFor="role_id" className={`text-sm font-medium ${theme === 'dark' ? 'text-zinc-300' : 'text-gray-700'}`}>
               Role *
             </Label>
             <select
               id="role_id"
               {...register('role_id', { required: 'Role is required' })}
-              className={`mt-1.5 w-full px-3 py-2 rounded-md border text-sm ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-white' : 'bg-white border-gray-300'}`}
+              disabled={!!preselectedRoleId}
+              className={`mt-1.5 w-full px-3 py-2 rounded-md border text-sm ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-white' : 'bg-white border-gray-300'} ${preselectedRoleId ? 'opacity-60 cursor-not-allowed' : ''}`}
             >
               <option value="">Select a role</option>
               {roles.map(role => (

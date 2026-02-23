@@ -1,15 +1,14 @@
 import { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { PatientsPage } from './pages/PatientsPage';
+import { TasksPage } from './pages/TasksPage';
 import { AIStudioPage } from './pages/AIStudioPage';
 import { PatientDetailPage } from './pages/PatientDetailPage';
 import { LoginPage } from './pages/LoginPage';
 import { AdminInvitePage } from './pages/AdminInvitePage';
 import { AdminOrganizationsPage } from './pages/AdminOrganizationsPage';
 import { AdminRolesPage } from './pages/AdminRolesPage';
-import { AdminPolicyGroupsPage } from './pages/AdminPolicyGroupsPage';
-import { AdminPermissionsPage } from './pages/AdminPermissionsPage';
-import { AdminRolePoliciesPage } from './pages/AdminRolePoliciesPage';
+import { AdminPolicyManagementPage } from './pages/AdminPolicyManagementPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { OnboardingPage } from './pages/OnboardingPageRefactored';
 
@@ -74,21 +73,15 @@ function AppContent() {
   // Show LoginPage if not authenticated
   if (!isAuthenticated) {
     return <LoginPage />;
-  }
-
-  // Show Admin Portal for admin users
+  }  // Show Admin Portal for admin users
   if (user?.role === 'admin') {
     switch (adminPage) {
       case 'Organizations':
         return <AdminOrganizationsPage onNavigate={handleAdminNavigate} />;
       case 'Roles':
         return <AdminRolesPage onNavigate={handleAdminNavigate} />;
-      case 'Policy Groups':
-        return <AdminPolicyGroupsPage onNavigate={handleAdminNavigate} />;
-      case 'Permissions':
-        return <AdminPermissionsPage onNavigate={handleAdminNavigate} />;
-      case 'Role Policies':
-        return <AdminRolePoliciesPage onNavigate={handleAdminNavigate} />;
+      case 'Policy Management':
+        return <AdminPolicyManagementPage onNavigate={handleAdminNavigate} />;
       case 'Users':
       default:
         return <AdminInvitePage onNavigate={handleAdminNavigate} />;
@@ -103,6 +96,8 @@ function AppContent() {
 
   // Render the appropriate page based on currentPage
   switch (currentPage) {
+    case 'Tasks':
+      return <TasksPage onNavigate={handleNavigate} />;
     case 'AI Studio':
       return <AIStudioPage onNavigate={handleNavigate} />;
     case 'PatientDetail':

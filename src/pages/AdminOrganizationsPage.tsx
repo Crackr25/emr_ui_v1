@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Plus, Building2 } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { AdminSidebar } from '../components/AdminSidebar';
 import { AddOrganizationModal } from '../components/AddOrganizationModal';
 import { useTheme } from '../context/ThemeContext';
@@ -15,13 +15,14 @@ interface AdminOrganizationsPageProps {
 const MOCK_ORGANIZATIONS: Organization[] = [
   {
     organization_id: '1',
-    name: 'UTAH Hospice',
+    name: 'ORACLE',
     address: '123 Main Street, Salt Lake City, UT 84101',
     phone: '(801) 555-0100',
     email: 'contact@utahhospice.org',
     website: 'https://utahhospice.org',
     type: 'Hospice',
     status: 'active',
+    is_primary: true,
     created_at: '2024-01-15T10:00:00Z',
     updated_at: '2024-01-15T10:00:00Z',
   },
@@ -34,6 +35,7 @@ const MOCK_ORGANIZATIONS: Organization[] = [
     website: 'https://mountainviewmed.com',
     type: 'Hospital',
     status: 'active',
+    is_primary: false,
     created_at: '2024-02-01T10:00:00Z',
     updated_at: '2024-02-01T10:00:00Z',
   },
@@ -45,6 +47,7 @@ const MOCK_ORGANIZATIONS: Organization[] = [
     email: 'hello@sunrisehomehealth.com',
     type: 'Home Health',
     status: 'active',
+    is_primary: false,
     created_at: '2024-02-10T10:00:00Z',
     updated_at: '2024-02-10T10:00:00Z',
   },
@@ -55,7 +58,6 @@ export const AdminOrganizationsPage: React.FC<AdminOrganizationsPageProps> = ({ 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [organizations, setOrganizations] = useState<Organization[]>(MOCK_ORGANIZATIONS);
   const [editingOrganization, setEditingOrganization] = useState<Organization | null>(null);
-
   const handleAddOrganization = (orgData: OrganizationFormData) => {
     if (editingOrganization) {
       const updatedOrg: Organization = {
@@ -68,10 +70,13 @@ export const AdminOrganizationsPage: React.FC<AdminOrganizationsPageProps> = ({ 
       ));
       console.log('✏️ Organization updated:', updatedOrg);
     } else {
+      // Check if this is the first organization, make it primary
+      const isPrimaryOrg = organizations.length === 0;
       const newOrg: Organization = {
         organization_id: String(organizations.length + 1),
         ...orgData,
         status: 'active',
+        is_primary: isPrimaryOrg,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
@@ -85,44 +90,49 @@ export const AdminOrganizationsPage: React.FC<AdminOrganizationsPageProps> = ({ 
     setEditingOrganization(org);
     setIsAddModalOpen(true);
   };
-
   const handleDeleteOrganization = (orgId: string) => {
-    setOrganizations(organizations.filter(org => org.organization_id !== orgId));
-    console.log('🗑️ Organization deleted:', orgId);
+    const orgToDelete = organizations.find(org => org.organization_id === orgId);
+    if (orgToDelete?.is_primary) {
+      alert('Cannot delete the primary organization. Please set another organization as primary first.');
+      return;
+    }
+    if (window.confirm('Are you sure you want to delete this organization?')) {
+      setOrganizations(organizations.filter(org => org.organization_id !== orgId));
+      console.log('🗑️ Organization deleted:', orgId);
+    }
+  };
+
+  const handleSetPrimary = (orgId: string) => {
+    if (window.confirm('Are you sure you want to set this as the primary organization? This will handle all main operations and settings.')) {
+      setOrganizations(organizations.map(org => ({
+        ...org,
+        is_primary: org.organization_id === orgId,
+        updated_at: new Date().toISOString(),
+      })));
+      console.log('⭐ Primary organization set:', orgId);
+    }
   };
 
   const columns = useMemo(
     () => createOrganizationColumns({ 
       theme, 
       onEdit: handleEditOrganization,
-      onDelete: handleDeleteOrganization 
+      onDelete: handleDeleteOrganization,
+      onSetPrimary: handleSetPrimary
     }),
     [theme, organizations]
   );
 
   return (
     <div className={`flex h-screen ${theme === 'dark' ? 'bg-zinc-950' : 'bg-gray-50'}`}>
-      <AdminSidebar currentPage="Organizations" onNavigate={onNavigate} />
-
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <AdminSidebar currentPage="Organizations" onNavigate={onNavigate} />      <main className="flex-1 flex flex-col overflow-hidden">
         <header className={`${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-200'} border-b px-8 py-3`}>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Admin Portal</h1>
+              <h1 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Organizations Management</h1>
               <p className={`text-xs mt-0.5 ${theme === 'dark' ? 'text-zinc-400' : 'text-gray-600'}`}>
-                Manage Organizations
+                Manage organizations and healthcare facilities
               </p>
-            </div>
-          </div>
-        </header>
-
-        <div className="flex-1 overflow-auto px-8 py-6">
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <Building2 className={`w-5 h-5 ${theme === 'dark' ? 'text-zinc-400' : 'text-gray-600'}`} />
-              <h2 className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Organizations ({organizations.length})
-              </h2>
             </div>
             <Button
               onClick={() => {
@@ -135,8 +145,16 @@ export const AdminOrganizationsPage: React.FC<AdminOrganizationsPageProps> = ({ 
               Add Organization
             </Button>
           </div>
+        </header>
 
+        <div className="flex-1 overflow-auto px-8 py-6">
           <div className={`${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-200'} border rounded-lg p-6`}>
+            <div className="mb-4">
+              <h3 className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                All Organizations
+              </h3>
+            </div>
+            
             <DataTable 
               columns={columns} 
               data={organizations} 

@@ -30,6 +30,16 @@ export interface PatientFormData {
   referral_files?: File[];
   task_title?: string;
   task_description?: string;
+  task_assign_to?: string;
+  task_name?: string;
+  task_type?: string;
+  task_status?: string;
+  start_date?: string;
+  duration_days?: number;
+  end_date?: string;
+  oasis_date?: string;
+  completed_date?: string;
+  oasis_file?: File;
 }
 
 export const AddPatientModal: React.FC<AddPatientModalProps> = ({
@@ -50,10 +60,20 @@ export const AddPatientModal: React.FC<AddPatientModalProps> = ({
     referral_stage: 'Pending',
     task_title: '',
     task_description: '',
+    task_assign_to: 'Unassigned',
+    task_name: '',
+    task_type: '',
+    task_status: 'Assigned',
+    start_date: new Date().toISOString().split('T')[0],
+    duration_days: 1,
+    end_date: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+    oasis_date: '',
+    completed_date: '',
   });
 
   const [errors, setErrors] = useState<Partial<Record<keyof PatientFormData, string>>>({});
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [oasisFile, setOasisFile] = useState<File | null>(null);
 
   const handleInputChange = (field: keyof PatientFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -79,6 +99,35 @@ export const AddPatientModal: React.FC<AddPatientModalProps> = ({
     }
   };
 
+  const handleOasisFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setOasisFile(e.target.files[0]);
+      setFormData((prev) => ({ ...prev, oasis_file: e.target.files![0] }));
+    }
+  };
+
+  const handleDurationChange = (value: string) => {
+    const duration = parseInt(value) || 1;
+    const startDate = new Date(formData.start_date || Date.now());
+    const endDate = new Date(startDate.getTime() + duration * 86400000);
+    setFormData((prev) => ({
+      ...prev,
+      duration_days: duration,
+      end_date: endDate.toISOString().split('T')[0],
+    }));
+  };
+
+  const handleStartDateChange = (value: string) => {
+    const startDate = new Date(value);
+    const duration = formData.duration_days || 1;
+    const endDate = new Date(startDate.getTime() + duration * 86400000);
+    setFormData((prev) => ({
+      ...prev,
+      start_date: value,
+      end_date: endDate.toISOString().split('T')[0],
+    }));
+  };
+
   const handleClose = () => {
     setFormData({
       first_name: '',
@@ -91,10 +140,20 @@ export const AddPatientModal: React.FC<AddPatientModalProps> = ({
       referral_stage: 'Pending',
       task_title: '',
       task_description: '',
+      task_assign_to: 'Unassigned',
+      task_name: '',
+      task_type: '',
+      task_status: 'Assigned',
+      start_date: new Date().toISOString().split('T')[0],
+      duration_days: 1,
+      end_date: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+      oasis_date: '',
+      completed_date: '',
     });
     setErrors({});
     setCurrentStep(1);
     setSelectedFiles([]);
+    setOasisFile(null);
     onClose();
   };
 
@@ -386,36 +445,196 @@ export const AddPatientModal: React.FC<AddPatientModalProps> = ({
             </div>
           ) : (
             <div className="space-y-4">
-              {/* Task Title */}
+              {/* Assign to */}
               <div>
-                <Label htmlFor="task_title" className={theme === 'dark' ? 'text-zinc-300' : 'text-gray-700'}>
-                  Task Title
+                <Label htmlFor="task_assign_to" className={theme === 'dark' ? 'text-zinc-300' : 'text-gray-700'}>
+                  Assign to <span className="text-red-500">*</span>
                 </Label>
-                <Input
-                  id="task_title"
-                  value={formData.task_title}
-                  onChange={(e) => handleInputChange('task_title', e.target.value)}
-                  className={`mt-1.5 ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500' : ''}`}
-                  placeholder="Enter task title"
-                />
+                <Select
+                  value={formData.task_assign_to}
+                  onValueChange={(value) => handleInputChange('task_assign_to', value)}
+                >
+                  <SelectTrigger
+                    className={`mt-1.5 ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-white' : ''}`}
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className={theme === 'dark' ? 'bg-zinc-800 border-zinc-700' : ''}>
+                    <SelectItem value="Unassigned">Unassigned</SelectItem>
+                    <SelectItem value="Dr. Smith">Dr. Smith</SelectItem>
+                    <SelectItem value="Dr. Johnson">Dr. Johnson</SelectItem>
+                    <SelectItem value="Nurse Davis">Nurse Davis</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
-              {/* Task Description */}
+              {/* Task */}
               <div>
-                <Label htmlFor="task_description" className={theme === 'dark' ? 'text-zinc-300' : 'text-gray-700'}>
-                  Task Description
+                <Label htmlFor="task_name" className={theme === 'dark' ? 'text-zinc-300' : 'text-gray-700'}>
+                  Task <span className="text-red-500">*</span>
                 </Label>
-                <textarea
-                  id="task_description"
-                  value={formData.task_description}
-                  onChange={(e) => handleInputChange('task_description', e.target.value)}
-                  className={`mt-1.5 w-full min-h-[120px] px-3 py-2 rounded-md border text-sm ${
-                    theme === 'dark'
-                      ? 'bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500'
-                      : 'bg-white border-gray-300'
-                  }`}
-                  placeholder="Enter task description (optional)"
-                />
+                <Select
+                  value={formData.task_name}
+                  onValueChange={(value) => handleInputChange('task_name', value)}
+                >
+                  <SelectTrigger
+                    className={`mt-1.5 ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-white' : ''}`}
+                  >
+                    <SelectValue placeholder="Select task" />
+                  </SelectTrigger>
+                  <SelectContent className={theme === 'dark' ? 'bg-zinc-800 border-zinc-700' : ''}>
+                    <SelectItem value="Initial Assessment">Initial Assessment</SelectItem>
+                    <SelectItem value="Follow-up Visit">Follow-up Visit</SelectItem>
+                    <SelectItem value="OASIS Completion">OASIS Completion</SelectItem>
+                    <SelectItem value="Care Plan Review">Care Plan Review</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Task Type & Status */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="task_type" className={theme === 'dark' ? 'text-zinc-300' : 'text-gray-700'}>
+                    Task Type <span className="text-red-500">*</span>
+                  </Label>
+                  <Select
+                    value={formData.task_type}
+                    onValueChange={(value) => handleInputChange('task_type', value)}
+                  >
+                    <SelectTrigger
+                      className={`mt-1.5 ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-white' : ''}`}
+                    >
+                      <SelectValue placeholder="Select task type" />
+                    </SelectTrigger>
+                    <SelectContent className={theme === 'dark' ? 'bg-zinc-800 border-zinc-700' : ''}>
+                      <SelectItem value="Assessment">Assessment</SelectItem>
+                      <SelectItem value="Documentation">Documentation</SelectItem>
+                      <SelectItem value="Visit">Visit</SelectItem>
+                      <SelectItem value="Review">Review</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="task_status" className={theme === 'dark' ? 'text-zinc-300' : 'text-gray-700'}>
+                    Status <span className="text-red-500">*</span>
+                  </Label>
+                  <Select
+                    value={formData.task_status}
+                    onValueChange={(value) => handleInputChange('task_status', value)}
+                  >
+                    <SelectTrigger
+                      className={`mt-1.5 ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-white' : ''}`}
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className={theme === 'dark' ? 'bg-zinc-800 border-zinc-700' : ''}>
+                      <SelectItem value="Assigned">Assigned</SelectItem>
+                      <SelectItem value="In Progress">In Progress</SelectItem>
+                      <SelectItem value="Completed">Completed</SelectItem>
+                      <SelectItem value="On Hold">On Hold</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Start Date, Duration, End Date */}
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <Label htmlFor="start_date" className={theme === 'dark' ? 'text-zinc-300' : 'text-gray-700'}>
+                    Start Date <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="start_date"
+                    type="date"
+                    value={formData.start_date}
+                    onChange={(e) => handleStartDateChange(e.target.value)}
+                    className={`mt-1.5 ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-white' : ''}`}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="duration_days" className={theme === 'dark' ? 'text-zinc-300' : 'text-gray-700'}>
+                    Duration (Days) <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="duration_days"
+                    type="number"
+                    min="1"
+                    value={formData.duration_days}
+                    onChange={(e) => handleDurationChange(e.target.value)}
+                    className={`mt-1.5 ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-white' : ''}`}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="end_date" className={theme === 'dark' ? 'text-zinc-300' : 'text-gray-700'}>
+                    End Date
+                  </Label>
+                  <Input
+                    id="end_date"
+                    type="date"
+                    value={formData.end_date}
+                    readOnly
+                    className={`mt-1.5 ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-white' : ''}`}
+                  />
+                </div>
+              </div>
+
+              {/* OASIS Date & Completed Date */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="oasis_date" className={theme === 'dark' ? 'text-zinc-300' : 'text-gray-700'}>
+                    OASIS Date <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="oasis_date"
+                    type="date"
+                    value={formData.oasis_date}
+                    onChange={(e) => handleInputChange('oasis_date', e.target.value)}
+                    placeholder="Select OASIS date"
+                    className={`mt-1.5 ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-white' : ''}`}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="completed_date" className={theme === 'dark' ? 'text-zinc-300' : 'text-gray-700'}>
+                    Completed Date
+                  </Label>
+                  <Input
+                    id="completed_date"
+                    type="date"
+                    value={formData.completed_date}
+                    onChange={(e) => handleInputChange('completed_date', e.target.value)}
+                    placeholder="Select completed date"
+                    className={`mt-1.5 ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-white' : ''}`}
+                  />
+                </div>
+              </div>
+
+              {/* OASIS File */}
+              <div>
+                <Label htmlFor="oasis_file" className={theme === 'dark' ? 'text-zinc-300' : 'text-gray-700'}>
+                  OASIS File
+                </Label>
+                <div className="mt-1.5">
+                  <label
+                    htmlFor="oasis_file"
+                    className={`flex items-center justify-center gap-2 px-4 py-2 border rounded-lg cursor-pointer transition-colors ${
+                      theme === 'dark'
+                        ? 'border-zinc-700 hover:border-zinc-600 bg-zinc-800 hover:bg-zinc-750'
+                        : 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100'
+                    }`}
+                  >
+                    <Upload className={`w-4 h-4 ${theme === 'dark' ? 'text-zinc-400' : 'text-gray-600'}`} />
+                    <span className={`text-sm ${theme === 'dark' ? 'text-zinc-400' : 'text-gray-600'}`}>
+                      {oasisFile ? oasisFile.name : 'Upload OASIS file'}
+                    </span>
+                  </label>
+                  <input
+                    id="oasis_file"
+                    type="file"
+                    onChange={handleOasisFileChange}
+                    className="hidden"
+                    accept=".pdf,.doc,.docx"
+                  />
+                </div>
               </div>
             </div>
           )}
@@ -461,7 +680,7 @@ export const AddPatientModal: React.FC<AddPatientModalProps> = ({
                 onClick={() => setCurrentStep(1)}
                 className={theme === 'dark' ? 'border-zinc-700 text-zinc-300 hover:bg-zinc-800' : ''}
               >
-                ← Back
+                ← Previous
               </Button>
               <Button
                 type="submit"

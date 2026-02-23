@@ -7,6 +7,7 @@ export interface Organization {
   website?: string;
   type?: string;
   status: 'active' | 'inactive';
+  is_primary?: boolean;
   created_at: string;
   updated_at: string;
 }

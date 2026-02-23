@@ -1,38 +1,39 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { Edit, Trash2, Star } from 'lucide-react';
 import { Organization } from '../types/organization.types';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 
 interface CreateOrganizationColumnsProps {
   theme: string;
   onEdit: (org: Organization) => void;
   onDelete: (orgId: string) => void;
+  onSetPrimary: (orgId: string) => void;
 }
 
 export const createOrganizationColumns = ({
   theme,
   onEdit,
   onDelete,
+  onSetPrimary,
 }: CreateOrganizationColumnsProps): ColumnDef<Organization>[] => [
   {
     accessorKey: 'name',
     header: 'Organization Name',
     cell: ({ row }) => {
       const name = row.getValue('name') as string;
+      const isPrimary = row.original.is_primary;
       return (
         <div className="flex items-center gap-2">
           <div className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
             {name}
           </div>
+          {isPrimary && (
+            <Badge className={`${theme === 'dark' ? 'bg-yellow-900/30 text-yellow-400 border-yellow-800' : 'bg-yellow-100 text-yellow-700 border-yellow-200'}`}>
+              <Star className="w-3 h-3 mr-1 fill-current" />
+              Primary
+            </Badge>
+          )}
         </div>
       );
     },
@@ -109,39 +110,50 @@ export const createOrganizationColumns = ({
         </Badge>
       );
     },
-  },
-  {
+  },  {
     id: 'actions',
+    header: 'Actions',
     cell: ({ row }) => {
       const organization = row.original;
+      const isPrimary = organization.is_primary;
 
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
+        <div className="flex items-center gap-2">
+          {!isPrimary && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onSetPrimary(organization.organization_id)}
+              className={`h-8 px-3 ${theme === 'dark' ? 'hover:bg-yellow-950/30 text-yellow-400 hover:text-yellow-300' : 'hover:bg-yellow-50 text-yellow-600 hover:text-yellow-700'}`}
+              title="Set as primary organization"
+            >
+              <Star className="w-4 h-4 mr-1" />
+              <span className="text-xs">Set Primary</span>
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className={theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-200'}>
-            <DropdownMenuLabel className={theme === 'dark' ? 'text-zinc-300' : 'text-gray-700'}>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator className={theme === 'dark' ? 'bg-zinc-800' : 'bg-gray-200'} />
-            <DropdownMenuItem
-              onClick={() => onEdit(organization)}
-              className={theme === 'dark' ? 'text-zinc-300 hover:bg-zinc-800' : 'text-gray-700 hover:bg-gray-100'}
-            >
-              <Pencil className="mr-2 h-4 w-4" />
-              Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => onDelete(organization.organization_id)}
-              className={theme === 'dark' ? 'text-red-400 hover:bg-zinc-800' : 'text-red-600 hover:bg-gray-100'}
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onEdit(organization)}
+            className={`h-8 w-8 p-0 ${theme === 'dark' ? 'hover:bg-zinc-800 text-zinc-400 hover:text-white' : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'}`}
+          >
+            <Edit className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              if (window.confirm('Are you sure you want to delete this organization?')) {
+                onDelete(organization.organization_id);
+              }
+            }}
+            className={`h-8 w-8 p-0 ${theme === 'dark' ? 'hover:bg-red-950/30 text-zinc-400 hover:text-red-400' : 'hover:bg-red-50 text-gray-600 hover:text-red-600'}`}
+            disabled={isPrimary}
+            title={isPrimary ? 'Cannot delete primary organization' : 'Delete organization'}
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        </div>
       );
     },
   },

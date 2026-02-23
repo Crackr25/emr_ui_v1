@@ -89,7 +89,7 @@ export const AddOrganizationModal: React.FC<AddOrganizationModalProps> = ({
               type="text"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              placeholder="e.g., UTAH Hospice"
+              placeholder="e.g., ORACLE"
               className={`mt-1.5 ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500' : ''}`}
               required
             />

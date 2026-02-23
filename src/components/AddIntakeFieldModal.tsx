@@ -72,10 +72,10 @@ export const AddIntakeFieldModal: React.FC<AddIntakeFieldModalProps> = ({
 
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className={`rounded-lg shadow-2xl w-full max-w-md border ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-200'}`}>
+        <div className={`rounded-lg shadow-2xl w-full max-w-lg border ${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-200'}`}>
           {/* Header */}
-          <div className={`flex items-center justify-between px-6 py-3 border-b ${theme === 'dark' ? 'border-zinc-800' : 'border-gray-200'}`}>
-            <h2 className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>New Intake Field</h2>
+          <div className={`flex items-center justify-between px-6 py-4 border-b ${theme === 'dark' ? 'border-zinc-800' : 'border-gray-200'}`}>
+            <h2 className={`text-base font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>New Intake Field</h2>
             <button
               onClick={handleCancel}
               className={`transition-colors ${theme === 'dark' ? 'text-zinc-400 hover:text-white' : 'text-gray-400 hover:text-gray-900'}`}
@@ -86,10 +86,10 @@ export const AddIntakeFieldModal: React.FC<AddIntakeFieldModalProps> = ({
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="px-6 py-4 space-y-3">
+          <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
             {/* Field Name */}
             <div>
-              <label htmlFor="fieldName" className={`block text-xs font-medium mb-1.5 ${theme === 'dark' ? 'text-zinc-300' : 'text-gray-700'}`}>
+              <label htmlFor="fieldName" className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-zinc-300' : 'text-gray-700'}`}>
                 Field Name
               </label>
               <input
@@ -99,13 +99,13 @@ export const AddIntakeFieldModal: React.FC<AddIntakeFieldModalProps> = ({
                 onChange={(e) => setFormData({ ...formData, fieldName: e.target.value })}
                 placeholder='Enter intake field name (e.g., "Patient Age")'
                 required
-                className={`w-full px-3 py-2 text-sm rounded-md focus:outline-none focus:ring-2 focus:border-transparent transition-all ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500 focus:ring-zinc-600' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-blue-500'}`}
+                className={`w-full px-3 py-2.5 text-sm border rounded-md focus:outline-none focus:ring-2 focus:border-transparent transition-all ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500 focus:ring-zinc-600' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-blue-500'}`}
               />
             </div>
 
             {/* Set */}
             <div>
-              <label htmlFor="set" className={`block text-xs font-medium mb-1.5 ${theme === 'dark' ? 'text-zinc-300' : 'text-gray-700'}`}>
+              <label htmlFor="set" className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-zinc-300' : 'text-gray-700'}`}>
                 Set
               </label>
               <div className="flex gap-2">
@@ -113,7 +113,7 @@ export const AddIntakeFieldModal: React.FC<AddIntakeFieldModalProps> = ({
                   id="set"
                   value={formData.set}
                   onChange={(e) => setFormData({ ...formData, set: e.target.value })}
-                  className={`flex-1 px-3 py-2 text-sm rounded-md focus:outline-none focus:ring-2 focus:border-transparent transition-all ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-white focus:ring-zinc-600' : 'bg-white border-gray-300 text-gray-900 focus:ring-blue-500'}`}
+                  className={`flex-1 px-3 py-2.5 text-sm border rounded-md focus:outline-none focus:ring-2 focus:border-transparent transition-all ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-white focus:ring-zinc-600' : 'bg-white border-gray-300 text-gray-900 focus:ring-blue-500'}`}
                   aria-label="Select a set"
                 >
                   <option value="">Select a set</option>
@@ -124,7 +124,7 @@ export const AddIntakeFieldModal: React.FC<AddIntakeFieldModalProps> = ({
                 </select>
                 <button
                   type="button"
-                  className={`px-3 py-2 rounded-md transition-colors ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 hover:bg-zinc-700 text-zinc-300 hover:text-white' : 'bg-gray-100 border-gray-300 hover:bg-gray-200 text-gray-700 hover:text-gray-900'}`}
+                  className={`px-3 py-2.5 border rounded-md transition-colors ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 hover:bg-zinc-700 text-zinc-300 hover:text-white' : 'bg-gray-100 border-gray-300 hover:bg-gray-200 text-gray-700 hover:text-gray-900'}`}
                   aria-label="Add new set"
                 >
                   <Plus className="w-4 h-4" />
@@ -134,7 +134,7 @@ export const AddIntakeFieldModal: React.FC<AddIntakeFieldModalProps> = ({
 
             {/* System Prompt */}
             <div>
-              <label htmlFor="systemPrompt" className={`block text-xs font-medium mb-1.5 ${theme === 'dark' ? 'text-zinc-300' : 'text-gray-700'}`}>
+              <label htmlFor="systemPrompt" className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-zinc-300' : 'text-gray-700'}`}>
                 System Prompt (Optional)
               </label>
               <textarea
@@ -143,16 +143,16 @@ export const AddIntakeFieldModal: React.FC<AddIntakeFieldModalProps> = ({
                 onChange={(e) => setFormData({ ...formData, systemPrompt: e.target.value })}
                 placeholder="Enter instructions for extracting this field..."
                 rows={3}
-                className={`w-full px-3 py-2 text-sm rounded-md focus:outline-none focus:ring-2 focus:border-transparent transition-all resize-none ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500 focus:ring-zinc-600' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-blue-500'}`}
+                className={`w-full px-3 py-2.5 text-sm border rounded-md focus:outline-none focus:ring-2 focus:border-transparent transition-all resize-none ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500 focus:ring-zinc-600' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-blue-500'}`}
               />
-              <p className={`mt-1 text-xs ${theme === 'dark' ? 'text-zinc-500' : 'text-gray-500'}`}>
+              <p className={`mt-1.5 text-xs ${theme === 'dark' ? 'text-zinc-500' : 'text-gray-500'}`}>
                 Provide instructions for how this field should be extracted from documents.
               </p>
             </div>
 
             {/* Example 1 */}
             <div>
-              <label htmlFor="example1" className={`block text-xs font-medium mb-1.5 ${theme === 'dark' ? 'text-zinc-300' : 'text-gray-700'}`}>
+              <label htmlFor="example1" className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-zinc-300' : 'text-gray-700'}`}>
                 Example 1 (Optional)
               </label>
               <textarea
@@ -161,13 +161,13 @@ export const AddIntakeFieldModal: React.FC<AddIntakeFieldModalProps> = ({
                 onChange={(e) => setFormData({ ...formData, example1: e.target.value })}
                 placeholder="Enter example value..."
                 rows={2}
-                className={`w-full px-3 py-2 text-sm rounded-md focus:outline-none focus:ring-2 focus:border-transparent transition-all resize-none ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500 focus:ring-zinc-600' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-blue-500'}`}
+                className={`w-full px-3 py-2.5 text-sm border rounded-md focus:outline-none focus:ring-2 focus:border-transparent transition-all resize-none ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500 focus:ring-zinc-600' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-blue-500'}`}
               />
             </div>
 
             {/* Example 2 */}
             <div>
-              <label htmlFor="example2" className={`block text-xs font-medium mb-1.5 ${theme === 'dark' ? 'text-zinc-300' : 'text-gray-700'}`}>
+              <label htmlFor="example2" className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-zinc-300' : 'text-gray-700'}`}>
                 Example 2 (Optional)
               </label>
               <textarea
@@ -176,7 +176,7 @@ export const AddIntakeFieldModal: React.FC<AddIntakeFieldModalProps> = ({
                 onChange={(e) => setFormData({ ...formData, example2: e.target.value })}
                 placeholder="Enter another example value..."
                 rows={2}
-                className={`w-full px-3 py-2 text-sm rounded-md focus:outline-none focus:ring-2 focus:border-transparent transition-all resize-none ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500 focus:ring-zinc-600' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-blue-500'}`}
+                className={`w-full px-3 py-2.5 text-sm border rounded-md focus:outline-none focus:ring-2 focus:border-transparent transition-all resize-none ${theme === 'dark' ? 'bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500 focus:ring-zinc-600' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-blue-500'}`}
               />
             </div>
 
@@ -195,19 +195,19 @@ export const AddIntakeFieldModal: React.FC<AddIntakeFieldModalProps> = ({
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center justify-end gap-2 pt-3">
+            <div className="flex items-center justify-end gap-3 pt-4">
               <button
                 type="button"
                 onClick={handleCancel}
-                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${theme === 'dark' ? 'text-zinc-300 hover:text-white hover:bg-zinc-800' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'}`}
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${theme === 'dark' ? 'text-zinc-300 hover:text-white hover:bg-zinc-800' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'}`}
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5 ${theme === 'dark' ? 'bg-black hover:bg-zinc-800 text-white' : 'bg-black hover:bg-gray-800 text-white'}`}
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-colors flex items-center gap-2 ${theme === 'dark' ? 'bg-black hover:bg-zinc-800 text-white' : 'bg-black hover:bg-gray-800 text-white'}`}
               >
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="w-4 h-4" />
                 Create Intake Field
               </button>
             </div>

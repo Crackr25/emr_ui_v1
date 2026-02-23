@@ -1,6 +1,6 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { Role } from '../types/role.types';
-import { Edit, Trash2, Users } from 'lucide-react';
+import { Edit, Trash2, Users, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface CreateRoleColumnsProps {
@@ -8,9 +8,10 @@ interface CreateRoleColumnsProps {
   onEdit: (role: Role) => void;
   onDelete: (roleId: string) => void;
   onAssignUsers?: (role: Role) => void;
+  onAssignPolicies?: (role: Role) => void;
 }
 
-export const createRoleColumns = ({ theme, onEdit, onDelete, onAssignUsers }: CreateRoleColumnsProps): ColumnDef<Role>[] => [
+export const createRoleColumns = ({ theme, onEdit, onDelete, onAssignUsers, onAssignPolicies }: CreateRoleColumnsProps): ColumnDef<Role>[] => [
   {
     accessorKey: 'role_name',
     header: 'Role Name',
@@ -73,8 +74,7 @@ export const createRoleColumns = ({ theme, onEdit, onDelete, onAssignUsers }: Cr
         {new Date(row.original.created_at).toLocaleDateString()}
       </div>
     ),
-  },
-  {
+  },  {
     id: 'actions',
     header: 'Actions',
     cell: ({ row }) => (
@@ -87,7 +87,18 @@ export const createRoleColumns = ({ theme, onEdit, onDelete, onAssignUsers }: Cr
             className={`h-8 px-3 ${theme === 'dark' ? 'hover:bg-blue-950/30 text-blue-400 hover:text-blue-300' : 'hover:bg-blue-50 text-blue-600 hover:text-blue-700'}`}
           >
             <Users className="w-4 h-4 mr-1" />
-            <span className="text-xs">Assign Users</span>
+            <span className="text-xs">Users</span>
+          </Button>
+        )}
+        {onAssignPolicies && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onAssignPolicies(row.original)}
+            className={`h-8 px-3 ${theme === 'dark' ? 'hover:bg-purple-950/30 text-purple-400 hover:text-purple-300' : 'hover:bg-purple-50 text-purple-600 hover:text-purple-700'}`}
+          >
+            <Shield className="w-4 h-4 mr-1" />
+            <span className="text-xs">Policies</span>
           </Button>
         )}
         <Button

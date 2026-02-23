@@ -54,11 +54,11 @@ export const PatientDetailPage: React.FC<PatientDetailPageProps> = ({
         <Tabs defaultValue="Intake" className="flex-1 flex flex-col overflow-hidden">
           <div className={`${theme === 'dark' ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-200'} border-b px-8`}>
             <TabsList className="bg-transparent h-auto p-0 gap-4">
-              <TabsTrigger value="Rules" className={`bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent rounded-none px-0 py-2 text-xs data-[state=active]:font-medium ${theme === 'dark' ? 'text-zinc-400 data-[state=active]:text-white data-[state=active]:border-white' : 'text-gray-600 data-[state=active]:text-gray-900 data-[state=active]:border-gray-900'}`}>
-                Rules
-              </TabsTrigger>
               <TabsTrigger value="Intake" className={`bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent rounded-none px-0 py-2 text-xs data-[state=active]:font-medium ${theme === 'dark' ? 'text-zinc-400 data-[state=active]:text-white data-[state=active]:border-white' : 'text-gray-600 data-[state=active]:text-gray-900 data-[state=active]:border-gray-900'}`}>
                 Intake
+              </TabsTrigger>
+              <TabsTrigger value="Rules" className={`bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent rounded-none px-0 py-2 text-xs data-[state=active]:font-medium ${theme === 'dark' ? 'text-zinc-400 data-[state=active]:text-white data-[state=active]:border-white' : 'text-gray-600 data-[state=active]:text-gray-900 data-[state=active]:border-gray-900'}`}>
+                Rules
               </TabsTrigger>
               <TabsTrigger value="ICD-10 Codes" className={`bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent rounded-none px-0 py-2 text-xs data-[state=active]:font-medium ${theme === 'dark' ? 'text-zinc-400 data-[state=active]:text-white data-[state=active]:border-white' : 'text-gray-600 data-[state=active]:text-gray-900 data-[state=active]:border-gray-900'}`}>
                 ICD-10 Codes
@@ -85,14 +85,14 @@ export const PatientDetailPage: React.FC<PatientDetailPageProps> = ({
           </div>
 
           {/* Tab Content */}
-          <TabsContent value="Rules" className="flex-1 flex m-0 data-[state=active]:flex data-[state=inactive]:hidden">
-            <PDFViewer />
-            <RulesTab />
-          </TabsContent>
-
           <TabsContent value="Intake" className="flex-1 flex m-0 data-[state=active]:flex data-[state=inactive]:hidden">
             <PDFViewer />
             <IntakeTab />
+          </TabsContent>
+
+          <TabsContent value="Rules" className="flex-1 flex m-0 data-[state=active]:flex data-[state=inactive]:hidden">
+            <PDFViewer />
+            <RulesTab />
           </TabsContent>
 
           <TabsContent value="ICD-10 Codes" className="flex-1 flex m-0 data-[state=active]:flex data-[state=inactive]:hidden">

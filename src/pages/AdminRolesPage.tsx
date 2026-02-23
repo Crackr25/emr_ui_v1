@@ -3,6 +3,7 @@ import { Plus } from 'lucide-react';
 import { AdminSidebar } from '../components/AdminSidebar';
 import { AddRoleModal } from '../components/AddRoleModal';
 import { AdminRoleUsersPage } from './AdminRoleUsersPage';
+import { AdminRolePoliciesAssignPage } from './AdminRolePoliciesAssignPage';
 import { useTheme } from '../context/ThemeContext';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
@@ -17,6 +18,36 @@ interface AdminRolesPageProps {
 const MOCK_ROLES: Role[] = [
   {
     role_id: '1',
+    role_name: 'Member',
+    role_description: 'Default role for standard organization members with basic access',
+    requires_npi: false,
+    requires_license: false,
+    created_at: '2024-01-15T10:00:00Z',
+    updated_at: '2024-01-15T10:00:00Z',
+    status: 'active',
+  },
+  {
+    role_id: '2',
+    role_name: 'Admin',
+    role_description: 'Administrative role with elevated permissions to manage users and settings',
+    requires_npi: false,
+    requires_license: false,
+    created_at: '2024-01-15T10:00:00Z',
+    updated_at: '2024-01-15T10:00:00Z',
+    status: 'active',
+  },
+  {
+    role_id: '3',
+    role_name: 'Owner',
+    role_description: 'Organization owner with full control and all system permissions',
+    requires_npi: false,
+    requires_license: false,
+    created_at: '2024-01-15T10:00:00Z',
+    updated_at: '2024-01-15T10:00:00Z',
+    status: 'active',
+  },
+  {
+    role_id: '4',
     role_name: 'Physician',
     role_description: 'Licensed medical doctor providing patient care',
     requires_npi: true,
@@ -26,7 +57,7 @@ const MOCK_ROLES: Role[] = [
     status: 'active',
   },
   {
-    role_id: '2',
+    role_id: '5',
     role_name: 'Nurse',
     role_description: 'Registered nurse assisting with patient care',
     requires_npi: false,
@@ -36,19 +67,9 @@ const MOCK_ROLES: Role[] = [
     status: 'active',
   },
   {
-    role_id: '3',
+    role_id: '6',
     role_name: 'Staff',
     role_description: 'Administrative and support staff',
-    requires_npi: false,
-    requires_license: false,
-    created_at: '2024-01-15T10:00:00Z',
-    updated_at: '2024-01-15T10:00:00Z',
-    status: 'active',
-  },
-  {
-    role_id: '4',
-    role_name: 'System Owner',
-    role_description: 'Full system administrator with all permissions',
     requires_npi: false,
     requires_license: false,
     created_at: '2024-01-15T10:00:00Z',
@@ -63,6 +84,7 @@ export const AdminRolesPage: React.FC<AdminRolesPageProps> = ({ onNavigate }) =>
   const [roles, setRoles] = useState<Role[]>(MOCK_ROLES);
   const [editingRole, setEditingRole] = useState<Role | null>(null);
   const [selectedRoleForUsers, setSelectedRoleForUsers] = useState<Role | null>(null);
+  const [selectedRoleForPolicies, setSelectedRoleForPolicies] = useState<Role | null>(null);
 
   const handleAddRole = (roleData: RoleFormData) => {
     if (editingRole) {
@@ -104,9 +126,12 @@ export const AdminRolesPage: React.FC<AdminRolesPageProps> = ({ onNavigate }) =>
     setIsAddRoleModalOpen(false);
     setEditingRole(null);
   };
-
   const handleAssignUsers = (role: Role) => {
     setSelectedRoleForUsers(role);
+  };
+
+  const handleAssignPolicies = (role: Role) => {
+    setSelectedRoleForPolicies(role);
   };
 
   const columns = useMemo(
@@ -114,10 +139,22 @@ export const AdminRolesPage: React.FC<AdminRolesPageProps> = ({ onNavigate }) =>
       theme, 
       onEdit: handleEditRole, 
       onDelete: handleDeleteRole,
-      onAssignUsers: handleAssignUsers
+      onAssignUsers: handleAssignUsers,
+      onAssignPolicies: handleAssignPolicies
     }),
     [theme]
   );
+
+  // Show policy assignment page if a role is selected for policies
+  if (selectedRoleForPolicies) {
+    return (
+      <AdminRolePoliciesAssignPage 
+        selectedRole={selectedRoleForPolicies}
+        onNavigate={onNavigate}
+        onBack={() => setSelectedRoleForPolicies(null)}
+      />
+    );
+  }
 
   // Show user assignment page if a role is selected
   if (selectedRoleForUsers) {
