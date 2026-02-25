@@ -1,7 +1,15 @@
-import React, { useState } from 'react';
-import { Activity, ArrowRight, ArrowLeft, User, Badge, FileText, Stethoscope } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { Button } from '@/components/ui/button';
+import React, { useState } from "react";
+import {
+  Activity,
+  ArrowRight,
+  ArrowLeft,
+  User,
+  Badge,
+  FileText,
+  Stethoscope,
+} from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { Button } from "@/components/ui/button";
 import {
   PersonalInfoForm,
   NPIForm,
@@ -13,7 +21,7 @@ import {
   OnboardingProgress,
   type License,
   type Taxonomy,
-} from '@/components/onboarding';
+} from "./index";
 
 interface OnboardingData {
   firstname: string;
@@ -24,40 +32,48 @@ interface OnboardingData {
 
 interface OnboardingPageProps {
   email: string;
-  role: 'doctor' | 'nurse' | 'admin';
+  role: "doctor" | "nurse" | "admin";
   onComplete?: () => void;
 }
 
-export const OnboardingPage: React.FC<OnboardingPageProps> = ({ email, role, onComplete }) => {
+export const OnboardingPage: React.FC<OnboardingPageProps> = ({
+  email,
+  role,
+  onComplete,
+}) => {
   const { login } = useAuth();
   const [currentStage, setCurrentStage] = useState(1);
   const [formData, setFormData] = useState<OnboardingData>({
-    firstname: '',
-    lastname: '',
-    date_of_birth: '',
-    npi_number: '',
+    firstname: "",
+    lastname: "",
+    date_of_birth: "",
+    npi_number: "",
   });
   const [errors, setErrors] = useState<Partial<OnboardingData>>({});
   const [licenses, setLicenses] = useState<License[]>([]);
   const [currentLicense, setCurrentLicense] = useState<License>({
-    license_type: '',
-    license_number: '',
-    issuing_state: '',
-    issue_date: '',
-    expiry_date: '',
+    license_type: "",
+    license_number: "",
+    issuing_state: "",
+    issue_date: "",
+    expiry_date: "",
     image_file: null,
-    image_preview: '',
+    image_preview: "",
   });
   const [licenseErrors, setLicenseErrors] = useState<Partial<License>>({});
-  const [expandedLicenseIndex, setExpandedLicenseIndex] = useState<number | null>(null);
+  const [expandedLicenseIndex, setExpandedLicenseIndex] = useState<
+    number | null
+  >(null);
   const [taxonomies, setTaxonomies] = useState<Taxonomy[]>([]);
   const [currentTaxonomy, setCurrentTaxonomy] = useState<Taxonomy>({
-    taxonomy_code: '',
-    description: '',
+    taxonomy_code: "",
+    description: "",
     is_primary: false,
   });
   const [taxonomyErrors, setTaxonomyErrors] = useState<Partial<Taxonomy>>({});
-  const [expandedTaxonomyIndex, setExpandedTaxonomyIndex] = useState<number | null>(null);
+  const [expandedTaxonomyIndex, setExpandedTaxonomyIndex] = useState<
+    number | null
+  >(null);
 
   const totalStages = 4;
 
@@ -66,28 +82,28 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({ email, role, onC
 
     if (stage === 1) {
       if (!formData.firstname.trim()) {
-        newErrors.firstname = 'First name is required';
+        newErrors.firstname = "First name is required";
       }
       if (!formData.lastname.trim()) {
-        newErrors.lastname = 'Last name is required';
+        newErrors.lastname = "Last name is required";
       }
       if (!formData.date_of_birth) {
-        newErrors.date_of_birth = 'Date of birth is required';
+        newErrors.date_of_birth = "Date of birth is required";
       } else {
         const birthDate = new Date(formData.date_of_birth);
         const today = new Date();
         const age = today.getFullYear() - birthDate.getFullYear();
         if (age < 18) {
-          newErrors.date_of_birth = 'You must be at least 18 years old';
+          newErrors.date_of_birth = "You must be at least 18 years old";
         }
       }
     }
 
     if (stage === 2) {
       if (!formData.npi_number.trim()) {
-        newErrors.npi_number = 'NPI number is required';
+        newErrors.npi_number = "NPI number is required";
       } else if (!/^\d{10}$/.test(formData.npi_number)) {
-        newErrors.npi_number = 'NPI must be exactly 10 digits';
+        newErrors.npi_number = "NPI must be exactly 10 digits";
       }
     }
 
@@ -98,18 +114,18 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({ email, role, onC
   const handleNext = () => {
     if (currentStage === 3) {
       if (licenses.length === 0) {
-        alert('Please add at least one license before continuing');
+        alert("Please add at least one license before continuing");
         return;
       }
       setCurrentStage(currentStage + 1);
     } else if (currentStage === 4) {
       if (taxonomies.length === 0) {
-        alert('Please add at least one taxonomy before continuing');
+        alert("Please add at least one taxonomy before continuing");
         return;
       }
       const hasPrimary = taxonomies.some((t) => t.is_primary);
       if (!hasPrimary) {
-        alert('Please mark one taxonomy as primary');
+        alert("Please mark one taxonomy as primary");
         return;
       }
       handleComplete();
@@ -130,7 +146,7 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({ email, role, onC
   };
 
   const handleComplete = () => {
-    console.log('✅ Onboarding completed:', {
+    console.log("✅ Onboarding completed:", {
       email,
       role,
       ...formData,
@@ -161,11 +177,16 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({ email, role, onC
 
   const validateLicense = (): boolean => {
     const errors: Partial<License> = {};
-    if (!currentLicense.license_type.trim()) errors.license_type = 'License type is required';
-    if (!currentLicense.license_number.trim()) errors.license_number = 'License number is required';
-    if (!currentLicense.issuing_state.trim()) errors.issuing_state = 'Issuing state is required';
-    if (!currentLicense.issue_date) errors.issue_date = 'Issue date is required';
-    if (!currentLicense.expiry_date) errors.expiry_date = 'Expiry date is required';
+    if (!currentLicense.license_type.trim())
+      errors.license_type = "License type is required";
+    if (!currentLicense.license_number.trim())
+      errors.license_number = "License number is required";
+    if (!currentLicense.issuing_state.trim())
+      errors.issuing_state = "Issuing state is required";
+    if (!currentLicense.issue_date)
+      errors.issue_date = "Issue date is required";
+    if (!currentLicense.expiry_date)
+      errors.expiry_date = "Expiry date is required";
 
     setLicenseErrors(errors);
     return Object.keys(errors).length === 0;
@@ -175,13 +196,13 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({ email, role, onC
     if (validateLicense()) {
       setLicenses([...licenses, currentLicense]);
       setCurrentLicense({
-        license_type: '',
-        license_number: '',
-        issuing_state: '',
-        issue_date: '',
-        expiry_date: '',
+        license_type: "",
+        license_number: "",
+        issuing_state: "",
+        issue_date: "",
+        expiry_date: "",
         image_file: null,
-        image_preview: '',
+        image_preview: "",
       });
       setLicenseErrors({});
     }
@@ -189,7 +210,7 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({ email, role, onC
 
   const handleLicenseImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && file.type.startsWith('image/')) {
+    if (file && file.type.startsWith("image/")) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setCurrentLicense({
@@ -200,7 +221,7 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({ email, role, onC
       };
       reader.readAsDataURL(file);
     } else {
-      alert('Please select a valid image file');
+      alert("Please select a valid image file");
     }
   };
 
@@ -208,7 +229,7 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({ email, role, onC
     setCurrentLicense({
       ...currentLicense,
       image_file: null,
-      image_preview: '',
+      image_preview: "",
     });
   };
 
@@ -223,7 +244,10 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({ email, role, onC
     setExpandedLicenseIndex(expandedLicenseIndex === index ? null : index);
   };
 
-  const updateTaxonomyField = (field: keyof Taxonomy, value: string | boolean) => {
+  const updateTaxonomyField = (
+    field: keyof Taxonomy,
+    value: string | boolean,
+  ) => {
     setCurrentTaxonomy({ ...currentTaxonomy, [field]: value });
     if (taxonomyErrors[field]) {
       setTaxonomyErrors({ ...taxonomyErrors, [field]: undefined });
@@ -232,9 +256,12 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({ email, role, onC
 
   const validateTaxonomy = (): boolean => {
     const errors: Partial<Taxonomy> = {};
-    if (!currentTaxonomy.taxonomy_code.trim()) errors.taxonomy_code = 'Taxonomy code is required';
-    if (currentTaxonomy.taxonomy_code.length !== 10) errors.taxonomy_code = 'Must be exactly 10 characters';
-    if (!currentTaxonomy.description.trim()) errors.description = 'Description is required';
+    if (!currentTaxonomy.taxonomy_code.trim())
+      errors.taxonomy_code = "Taxonomy code is required";
+    if (currentTaxonomy.taxonomy_code.length !== 10)
+      errors.taxonomy_code = "Must be exactly 10 characters";
+    if (!currentTaxonomy.description.trim())
+      errors.description = "Description is required";
 
     setTaxonomyErrors(errors);
     return Object.keys(errors).length === 0;
@@ -244,12 +271,15 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({ email, role, onC
     if (validateTaxonomy()) {
       let updatedTaxonomies = taxonomies;
       if (currentTaxonomy.is_primary) {
-        updatedTaxonomies = taxonomies.map((t) => ({ ...t, is_primary: false }));
+        updatedTaxonomies = taxonomies.map((t) => ({
+          ...t,
+          is_primary: false,
+        }));
       }
       setTaxonomies([...updatedTaxonomies, currentTaxonomy]);
       setCurrentTaxonomy({
-        taxonomy_code: '',
-        description: '',
+        taxonomy_code: "",
+        description: "",
         is_primary: false,
       });
       setTaxonomyErrors({});
@@ -272,7 +302,7 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({ email, role, onC
       taxonomies.map((t, i) => ({
         ...t,
         is_primary: i === index,
-      }))
+      })),
     );
   };
 
@@ -294,15 +324,15 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({ email, role, onC
   const getStageTitle = (stage: number) => {
     switch (stage) {
       case 1:
-        return 'Personal Information';
+        return "Personal Information";
       case 2:
-        return 'Professional Identity';
+        return "Professional Identity";
       case 3:
-        return 'Professional Licenses';
+        return "Professional Licenses";
       case 4:
-        return 'Specialty Taxonomy';
+        return "Specialty Taxonomy";
       default:
-        return '';
+        return "";
     }
   };
 
@@ -311,13 +341,13 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({ email, role, onC
       case 1:
         return "Let's start with your basic information";
       case 2:
-        return 'Enter your National Provider Identifier';
+        return "Enter your National Provider Identifier";
       case 3:
-        return 'Add your professional licenses';
+        return "Add your professional licenses";
       case 4:
-        return 'Add your specialty taxonomies';
+        return "Add your specialty taxonomies";
       default:
-        return '';
+        return "";
     }
   };
 
@@ -343,11 +373,16 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({ email, role, onC
           </div>
 
           {/* Progress Bar */}
-          <OnboardingProgress currentStage={currentStage} totalStages={totalStages} />
+          <OnboardingProgress
+            currentStage={currentStage}
+            totalStages={totalStages}
+          />
 
           {/* Header */}
           <div className="mb-8">
-            <h2 className="text-3xl font-bold text-black mb-2">{getStageTitle(currentStage)}</h2>
+            <h2 className="text-3xl font-bold text-black mb-2">
+              {getStageTitle(currentStage)}
+            </h2>
             <p className="text-zinc-600">{getStageDescription(currentStage)}</p>
             <p className="text-sm text-zinc-500 mt-2">Account: {email}</p>
           </div>
@@ -357,7 +392,9 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({ email, role, onC
             <PersonalInfoForm
               formData={formData}
               errors={errors}
-              onFieldChange={(field, value) => updateField(field as keyof OnboardingData, value)}
+              onFieldChange={(field, value) =>
+                updateField(field as keyof OnboardingData, value)
+              }
             />
           )}
 
@@ -366,7 +403,7 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({ email, role, onC
             <NPIForm
               npiNumber={formData.npi_number}
               error={errors.npi_number}
-              onNPIChange={(value) => updateField('npi_number', value)}
+              onNPIChange={(value) => updateField("npi_number", value)}
             />
           )}
 
@@ -412,7 +449,12 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({ email, role, onC
           {/* Navigation Buttons */}
           <div className="flex gap-3 mt-8">
             {currentStage > 1 && (
-              <Button onClick={handleBack} variant="outline" className="flex-1" size="lg">
+              <Button
+                onClick={handleBack}
+                variant="outline"
+                className="flex-1"
+                size="lg"
+              >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
               </Button>
@@ -422,8 +464,10 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({ email, role, onC
               className="flex-1 bg-black hover:bg-gray-800 text-white"
               size="lg"
             >
-              {currentStage === totalStages ? 'Complete' : 'Next'}
-              {currentStage < totalStages && <ArrowRight className="w-4 h-4 ml-2" />}
+              {currentStage === totalStages ? "Complete" : "Next"}
+              {currentStage < totalStages && (
+                <ArrowRight className="w-4 h-4 ml-2" />
+              )}
             </Button>
           </div>
         </div>
